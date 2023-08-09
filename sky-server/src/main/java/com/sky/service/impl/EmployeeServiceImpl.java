@@ -98,4 +98,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return new PageResult(total,records);
     }
+
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    public void startOrStop(Integer status, Long id) {
+        //update status = ? from employee where id = ? wrong
+        //update employee set status = ? where id = ?  right
+        Employee employee = new Employee();
+        employee.setId(id);
+        employee.setStatus(status);
+        employeeMapper.update(employee);
+    }
 }
