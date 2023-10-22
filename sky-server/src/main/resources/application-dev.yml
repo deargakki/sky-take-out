@@ -11,3 +11,9 @@ sky:
     bucket-name: learning-take-out
     access-key-secret: hHMNZxf7gZtgaFfwHolDIH86U4uJEA
     access-key-id: LTAI5tB9SE91448KAUBAGTAi
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
