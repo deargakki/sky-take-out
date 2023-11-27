@@ -14,6 +14,7 @@ import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.DishFlavorMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class DishServiceImpl implements DishService {
@@ -38,6 +40,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private SetmealMapper setmealMapper;
+
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
     @Transactional
     @AutoFill(value = OperationType.INSERT)
     public void saveWithFlavor(DishDTO dishDTO) {
@@ -82,7 +87,6 @@ public class DishServiceImpl implements DishService {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         //删除
         dishMapper.deleteByIds(ids);
-
         dishFlavorMapper.deleteByDishIds(ids);
         }
 
@@ -112,6 +116,39 @@ public class DishServiceImpl implements DishService {
             });
             dishFlavorMapper.insertBatch(dishFlavors);
         }
+    }
+
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    public List<DishVO> listWithFlavor(Dish dish){
+        List<Dish> dishList = dishMapper.list(dish);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d,dishVO);
+
+            //根据菜品id查询对应的口味
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
+    }
+
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
     }
 
 }
