@@ -8,6 +8,7 @@ import com.sky.entity.Dish;
 import com.sky.entity.Orders;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
+import com.sky.vo.OrderStatisticsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -39,5 +40,7 @@ public interface OrderMapper {
     Orders getByOrderId(Long id);
 
 
+    @Select("select count(*) from orders where status = #{status}")
+    Integer countStatus(Integer status);
 
 }
